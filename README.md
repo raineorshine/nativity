@@ -6,22 +6,24 @@ Safely add methods to native object prototypes.
 
 ## Install
 
-	  npm install --save nativity
+    $ npm install --save nativity
 
 ## Usage
 
-		var nativity = require('nativity');
-		var _ = require('underscore');
+```javascript
+var nativity = require('nativity');
+var _ = require('underscore');
 
-		nativity.install(Array.prototype, _, ['pluck']);
+nativity.install(Array.prototype, _, ['pluck']);
 
-		var people = [
-			{ name: 'Tina' },
-			{ name: 'Todd' },
-			{ name: 'Tucker' }
-		];
+var people = [
+	{ name: 'Tina' },
+	{ name: 'Todd' },
+	{ name: 'Tucker' }
+];
 
-		console.log(people.pluck('name'));
+console.log(people.pluck('name'));
+```
 
 ## Notes
 

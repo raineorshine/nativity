@@ -1,6 +1,6 @@
 {
   "name": "nativity",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Safely install functions on object prototypes.",
   "main": "index.js",
   "scripts": {

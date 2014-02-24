@@ -76,4 +76,15 @@ describe('install', function() {
 	  throw new Error('Test Not Implemented');
 	});
 
+	it('should accept a key-value pair in place of a property name which will map the key to the source object and the value to the destination object', function() {
+		var dest = {};
+		var src = { numberOne: function() { return 1; } };
+
+		nativity.install(dest, src, [{ numberOne: 'one' }]);
+
+		dest.should.not.have.property('numberOne');
+		dest.should.have.property('one');
+		dest.one().should.equal(1);
+	});
+
 });

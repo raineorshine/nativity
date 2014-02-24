@@ -49,14 +49,32 @@
 			thisIndex: 0
 		});
 
+		// get the keys for the destination object
+		var destKeys = props.map(function(prop) {
+			return typeof prop === 'string' ? prop : prop[Object.keys(prop)[0]];
+		});
+
+		// get the source and destination keys, which could be different if they provided a key-value pair like { repeatString: repeat } instead of a simple string key.
+		var destValues = props.map(function(prop) {
+			var srcKey, destKey;
+			if(typeof prop === 'string') {
+				srcKey = destKey = prop;
+			}
+			else {
+				srcKey = Object.keys(prop)[0];
+				destKey = prop[srcKey];
+			}
+
+			// if the value is a method and thisIndex is a number, forward this as the given numbered argument
+			return destKey instanceof Function && typeof options.thisIndex === 'number' ?
+				toInstance(src[prop], options.thisIndex) :
+				src[srcKey];
+		});
+
 		// install
 		_[options.safe ? 'defaults' : 'assign'](
 			dest,
-			_.zipObject(props, props.map(function(prop) {
-				return src[prop] instanceof Function && typeof options.thisIndex !== 'number' ?
-					toInstance(src[prop], options.thisIndex) :
-					src[prop];
-			}))
+			_.zipObject(destKeys, destValues)
 		);
 	}
 

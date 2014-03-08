@@ -37,3 +37,9 @@ Why is this better?
 * Mimics Subject-Verb-Object structure of the English language
 * More object-oriented
 * Chainable
+
+## Plugins
+
+* [nativity-cint](http://github.com/metaraine/nativity-cint)
+* [nativity-fomatto](http://github.com/metaraine/nativity-fomatto)
+* nativity-underscore - Coming Soon!

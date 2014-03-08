@@ -41,12 +41,10 @@ Why is this better?
 ### Build Notes
 
     $ gulp --require coffee-script/register
-    $ mocha --compilers coffee:coffee-script/register
 
     # Recomendded:
 
     alias gulp="gulp --require coffee-script/register"
-    alias mocha="mocha --compilers coffee:coffee-script/register"
 
 ## Plugins
 

@@ -8,6 +8,10 @@ Safely add methods to native object prototypes.
 
     $ npm install --save nativity
 
+### Build Notes
+
+    $ gulp --require coffee-script/register
+
 ## Usage
 
 ```javascript
@@ -43,3 +47,4 @@ Why is this better?
 * [nativity-cint](http://github.com/metaraine/nativity-cint)
 * [nativity-fomatto](http://github.com/metaraine/nativity-fomatto)
 * nativity-underscore - Coming Soon!
+

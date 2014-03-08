@@ -3,39 +3,27 @@
 
 	var _ = require('lodash');
 
-	/** Returns the in-bounds index of the given index for the array, supports negative and out-of-bounds indices. 
-		@private
-	*/
-	function circ(arr, i) {
-		i = i || 0;
-
-		// one modulus to get in range, another to eliminate negative
-		return (i % arr.length + arr.length) % arr.length;
-	}
-
-	/** Indexes into an array, supports negative indices. */
-	function index(arr, i) {
-		return arr[circ(arr, i)];
-	}
-
-	/** Returns a new array containing the elements of the given array shifted n spaces to the left, wrapping around the end. */
-	function rotate(arr, n) {
-		var output = [];
-		var len = arr.length;
-		for(var i=0; i<len; i++) {
-			output.push(index(arr, i+n));
-		}
-		return output;
-	}
-
 	/** Returns a new function that forwards 'this' as the first parameter to the given function, and thus can be called as a method of the object itself. 
 		@param thisIndex	Forwards 'this' at the given parameter index. Default: 0.
 	*/
 	function toInstance(f, thisIndex) {
+
+		// defaults
 		thisIndex = thisIndex || 0;
+
+		// validation
+		if(!f) {
+			throw new Error('Expected a function as the first argument.');
+		}
+
 		return function() {
-			var args = Array.prototype.slice.apply(arguments);
-			return f.apply(this, rotate([].concat([this], args), -thisIndex));
+			var args = Array.prototype.slice.call(arguments);
+
+			// insert 'this' into the desired position in thea arguments
+			args.splice(thisIndex, 0, this);
+
+			// apply the given function to the arguments injected with 'this' in the context of toInstance
+			return f.apply(this, args);
 		};
 	}
 

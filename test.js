@@ -3,13 +3,75 @@ var chai = require('chai'),
 		nativity = require('./index.js');
 
 describe('toInstance', function() {
+
 	it('should return an object with "this" forwarded to the first argument', function() {
-	  throw new Error('Test Not Implemented');
+		var o = { a: 1 };
+		var get = function(host) { return host.a; };
+		var getInstanced = nativity.toInstance(get, 0);
+		getInstanced.call(o).should.equal(1);
 	});
+
+	it('should use a default thisIndex of 0', function() {
+		var o = { a: 1 };
+		var get = function(host) { return host.a; };
+		var getInstanced = nativity.toInstance(get);
+		getInstanced.call(o).should.equal(1);
+	});
+
+	it('should pass other arguments as normal', function() {
+		var o = { a: 'a' };
+		var get = function(host, one, two) { return host.a + one + two; };
+		var getInstanced = nativity.toInstance(get, 0);
+		getInstanced.call(o, 'b', 'c').should.equal('abc');
+	});
+
+	it('should forward "this" into any argument position', function() {
+		var o = { a: 'a' };
+		var get = function(one, host, two) { return host.a + one + two; };
+		var getInstanced = nativity.toInstance(get, 1);
+		getInstanced.call(o, 'b', 'c').should.equal('abc');
+
+		var get2 = function(one, two, host) { return host.a + one + two; };
+		var getInstanced2 = nativity.toInstance(get2, 2);
+		getInstanced2.call(o, 'b', 'c').should.equal('abc');
+	});
+
+	it('should call the original function with the context of the instanced function', function() {
+		var o = { a: 'a' };
+		var get = function() { return this.a; };
+		var getInstanced = nativity.toInstance(get);
+		getInstanced.call(o).should.equal('a');
+	});
+
 });
 
 
 describe('install', function() {
+
+  it('should install a given function to the destination object', function() {
+		var dest = { a: 1 };
+		var get = function() { return this.a; };
+
+		nativity.install(dest, get);
+
+		dest.should.have.property('a', 1);
+		dest.should.have.property('get');
+		dest.get().should.equal(1);
+  });
+
+  it('should install an array of functions to the destination object', function() {
+		var dest = { a: 1 };
+		var get1 = function() { return this.a; };
+		var get2 = function() { return this.a * 2; };
+
+		nativity.install(dest, [get1, get2]);
+
+		dest.should.have.property('a', 1);
+		dest.should.have.property('get1');
+		dest.should.have.property('get2');
+		dest.get1().should.equal(1);
+		dest.get2().should.equal(2);
+  });
 
   it('should install all properties from the src object to the dest object', function() {
 		var dest = { a: 1 };

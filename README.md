@@ -8,10 +8,6 @@ Safely add methods to native object prototypes.
 
     $ npm install --save nativity
 
-### Build Notes
-
-    $ gulp --require coffee-script/register
-
 ## Usage
 
 ```javascript
@@ -41,6 +37,16 @@ Why is this better?
 * Mimics Subject-Verb-Object structure of the English language
 * More object-oriented
 * Chainable
+
+### Build Notes
+
+    $ gulp --require coffee-script/register
+    $ mocha --compilers coffee:coffee-script/register
+
+    # Recomendded:
+
+    alias gulp="gulp --require coffee-script/register"
+    alias mocha="mocha --compilers coffee:coffee-script/register"
 
 ## Plugins
 

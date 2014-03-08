@@ -1,6 +1,6 @@
 var install, installOne, toInstance, _;
 
-_ = require("lodash");
+_ = require('lodash');
 
 
 /*
@@ -12,11 +12,11 @@ toInstance = function(f, thisIndex) {
   var message;
   thisIndex = thisIndex || 0;
   if (!f) {
-    message = "Expected a function as the first argument";
+    message = 'Expected a function as the first argument';
     console.error(message, f);
     throw new Error(message);
   } else if (isNaN(thisIndex)) {
-    message = "thisIndex must be a valid number";
+    message = 'thisIndex must be a valid number';
     console.error(message, thisIndex);
     throw new Error(message);
   }
@@ -37,14 +37,14 @@ installOne = function(dest, value, name, options) {
     thisIndex: 0
   });
   if (!name) {
-    message = (typeof value === "function" ? "No destination key provided for anonymous function" : "No destination key provided for value");
+    message = (typeof value === 'function' ? 'No destination key provided for anonymous function' : 'No destination key provided for value');
     console.error(message, value);
     throw new Error(message);
   }
   safe = !(dest[name] && options.safe);
-  included = !(options.functionsOnly && typeof value !== "function");
+  included = !(options.functionsOnly && typeof value !== 'function');
   if (safe && included) {
-    return dest[name] = (typeof value === "function" && options.thisIndex !== null ? toInstance(value, options.thisIndex) : value);
+    return dest[name] = (typeof value === 'function' && options.thisIndex !== null ? toInstance(value, options.thisIndex) : value);
   }
 };
 
@@ -62,7 +62,7 @@ install = function(dest, src, props, options) {
   if (props instanceof Array) {
     props = props.map(function(prop) {
       var key, message;
-      if (typeof prop === "string") {
+      if (typeof prop === 'string') {
         return {
           from: prop,
           to: prop
@@ -74,7 +74,7 @@ install = function(dest, src, props, options) {
           to: prop[key]
         };
       } else {
-        message = "Expected prop to be either a string or a plain object.";
+        message = 'Expected prop to be either a string or a plain object.';
         console.error(message, prop);
         throw new Error(message);
       }

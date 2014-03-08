@@ -1,4 +1,4 @@
-_ = require("lodash")
+_ = require('lodash')
 
 ###
 Returns a new function that forwards 'this' as the first parameter to the given function, and thus can be called as a method of the object itself.
@@ -11,11 +11,11 @@ toInstance = (f, thisIndex) ->
   
   # validation
   if not f
-    message = "Expected a function as the first argument"
+    message = 'Expected a function as the first argument'
     console.error message, f
     throw new Error(message)
   else if isNaN(thisIndex)
-    message = "thisIndex must be a valid number"
+    message = 'thisIndex must be a valid number'
     console.error message, thisIndex
     throw new Error(message)
     
@@ -40,15 +40,15 @@ installOne = (dest, value, name, options) ->
   
   # validation
   if not name
-    message = (if typeof value is "function" then "No destination key provided for anonymous function" else "No destination key provided for value")
+    message = (if typeof value is 'function' then 'No destination key provided for anonymous function' else 'No destination key provided for value')
     console.error message, value
     throw new Error(message)
   safe = not (dest[name] and options.safe)
-  included = not (options.functionsOnly and typeof value isnt "function")
+  included = not (options.functionsOnly and typeof value isnt 'function')
   
   # console.log('dest', dest);
   # console.log('nv', name, value);
-  dest[name] = (if typeof value is "function" and options.thisIndex isnt null then toInstance(value, options.thisIndex) else value)  if safe and included
+  dest[name] = (if typeof value is 'function' and options.thisIndex isnt null then toInstance(value, options.thisIndex) else value)  if safe and included
 
 ###
 Assigns the given list of methods from the host object to the protoObj's prototype after converting them with toInstance.
@@ -66,7 +66,7 @@ install = (dest, src, props, options) ->
   # convert props into an array of objects mapping keys from the src into keys of the dest
   if props instanceof Array
     props = props.map((prop) ->
-      if typeof prop is "string"
+      if typeof prop is 'string'
         from: prop
         to: prop
       else if _.isPlainObject(prop)
@@ -74,7 +74,7 @@ install = (dest, src, props, options) ->
         from: key
         to: prop[key]
       else
-        message = "Expected prop to be either a string or a plain object."
+        message = 'Expected prop to be either a string or a plain object.'
         console.error message, prop
         throw new Error(message)
     )

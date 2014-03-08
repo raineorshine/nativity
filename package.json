@@ -4,7 +4,7 @@
   "description": "Safely install functions on object prototypes.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --compilers coffee:coffee-script/register"
   },
   "repository": {
     "type": "git",

@@ -1,4 +1,4 @@
-(function() {
+(function(exports) {
 	'use strict';
 
 	var _ = require('lodash');
@@ -82,4 +82,4 @@
 		install: install,
 		toInstance: toInstance
 	};
-})();
+})(typeof exports !== 'undefined' ? exports : window.Nativity = {});

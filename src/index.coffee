@@ -55,8 +55,13 @@ Assigns the given list of methods from the host object to the protoObj's prototy
 ###
 install = (dest, src, props, options) ->
   
+  # if options are specified but props is not, swap arguments
+  if _.isPlainObject props
+    options = props
+    props = null
+
   # if no props are specified, map all by default
-  props = Object.keys(src)  if not props
+  props = props or Object.keys(src)
   
   # convert props into an array of objects mapping keys from the src into keys of the dest
   if props instanceof Array
@@ -73,6 +78,10 @@ install = (dest, src, props, options) ->
         console.error message, prop
         throw new Error(message)
     )
+  else if not props
+    props = Object.keys src
+  else
+    options = props
   
   # install each prop onto the destination
   props.forEach (prop) ->

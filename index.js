@@ -54,9 +54,11 @@ Assigns the given list of methods from the host object to the protoObj's prototy
  */
 
 install = function(dest, src, props, options) {
-  if (!props) {
-    props = Object.keys(src);
+  if (_.isPlainObject(props)) {
+    options = props;
+    props = null;
   }
+  props = props || Object.keys(src);
   if (props instanceof Array) {
     props = props.map(function(prop) {
       var key, message;
@@ -77,6 +79,10 @@ install = function(dest, src, props, options) {
         throw new Error(message);
       }
     });
+  } else if (!props) {
+    props = Object.keys(src);
+  } else {
+    options = props;
   }
   return props.forEach(function(prop) {
     return installOne(dest, src[prop.from], prop.to, options);

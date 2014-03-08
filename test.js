@@ -76,6 +76,24 @@ describe('installOne', function() {
 		dest.should.have.property('a', 10);
   });
 
+  it('should return an object with a "overwritten" property indicating the number of properties overwritten', function() {
+		var dest = { a: 1 };
+		var installation = nativity.installOne(dest, 10, 'a', { safe: false });
+		should.exist(installation);
+		installation.should.have.property('overwritten', 1);
+  });
+
+  it('should return an object with an uninstall method', function() {
+		var dest = { a: 1 };
+
+		var installation = nativity.installOne(dest, 10, 'a', { safe: false });
+
+		should.exist(installation);
+		installation.should.have.property('uninstall');
+		installation.uninstall();
+		dest.should.have.property('a', 1);
+  });
+
 });
 
 
@@ -117,5 +135,37 @@ describe('install', function() {
 		dest.should.have.property('one');
 		dest.one().should.equal(1);
 	});
+
+  it('should support optional props even if an options object is supplied', function() {
+		var dest = { a: 1 };
+		var src = { a: 10, b: 20 };
+
+		nativity.install(dest, src, { safe: false });
+
+		dest.should.have.property('a', 10);
+		dest.should.have.property('b', 20);
+  });
+
+  it('should return an object with a "overwritten" property indicating the number of properties overwritten', function() {
+		var dest = { a: 1, b: 2 };
+		var src = { a: 10, b: 20, c: 30 };
+
+		var installation = nativity.install(dest, src, { safe: false });
+		should.exist(installation);
+		installation.should.have.property('overwritten', 2);
+  });
+
+  it('should return an object with an uninstall method', function() {
+		var dest = { a: 1 };
+		var src = { a: 10, b: 20 };
+
+		var installation = nativity.install(dest, src, { safe: false });
+
+		should.exist(installation);
+		installation.should.have.property('uninstall');
+		installation.uninstall();
+		dest.should.have.property('a', 1);
+		dest.should.not.have.property('b');
+  });
 
 });

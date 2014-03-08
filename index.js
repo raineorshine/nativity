@@ -13,7 +13,14 @@
 
 		// validation
 		if(!f) {
-			throw new Error('Expected a function as the first argument.');
+			var message = 'Expected a function as the first argument';
+			console.error(message, f);
+			throw new Error(message);
+		}
+		else if(isNaN(thisIndex)) {
+			var message = 'thisIndex must be a valid number';
+			console.error(message, thisIndex);
+			throw new Error(message);
 		}
 
 		return function() {
@@ -27,47 +34,79 @@
 		};
 	}
 
-	/** Assigns the given list of methods from the host object to the protoObj's prototype after converting them with toInstance. */
-	function install(dest, src, props, options) {
-	  
-	  // defaults
-	  props = props || Object.keys(src);
+	function installOne(dest, value, name, options) {
+
+		// defaults
+		name = name || value.name;
 		options = _.defaults(options || {}, {
 			safe: true,
+			functionsOnly: false,
 			thisIndex: 0
 		});
 
-		// get the keys for the destination object
-		var destKeys = props.map(function(prop) {
-			return typeof prop === 'string' ? prop : prop[Object.keys(prop)[0]];
+		// validation
+		if(!name) {
+			var message = typeof value === 'function' ?
+				'No destination key provided for anonymous function' :
+				'No destination key provided for value';
+			console.error(message, value);
+			throw new Error(message);
+		};
+
+		var safe = !(dest[name] && options.safe);
+		var included = !(options.functionsOnly && typeof value !== 'function');
+
+		// console.log('dest', dest);
+		// console.log('nv', name, value);
+		if(safe && included) {
+			dest[name] = typeof value === 'function' && options.thisIndex !== null ?
+				toInstance(value, options.thisIndex) :
+				value;
+		}
+	}
+
+	/** Assigns the given list of methods from the host object to the protoObj's prototype after converting them with toInstance. */
+	function install(dest, src, props, options) {
+	  
+	  // if no props are specified, map all by default
+	  if(!props) {
+	  	props = Object.keys(src);
+	  }
+
+	  // convert props into an array of objects mapping keys from the src into keys of the dest
+	  if(props instanceof Array) {
+	  	props = props.map(function(prop) {
+	  		if(typeof prop === 'string') {
+	  			return {
+	  				from: prop,
+	  				to: prop
+	  			};
+	  		}
+	  		else if(_.isPlainObject(prop)) {
+	  			var key = Object.keys(prop)[0];
+	  			return {
+	  				from: key,
+	  				to: prop[key]
+	  			}
+	  		}
+	  		else {
+					var message = 'Expected prop to be either a string or a plain object.';
+					console.error(message, prop);
+					throw new Error(message);
+	  		}
+	  	})
+	  }
+
+	  // install each prop onto the destination
+		props.forEach(function(prop) {
+		  installOne(dest, src[prop.from], prop.to, options);
 		});
-
-		// get the source and destination keys, which could be different if they provided a key-value pair like { repeatString: repeat } instead of a simple string key.
-		var destValues = props.map(function(prop) {
-			var srcKey, destKey;
-			if(typeof prop === 'string') {
-				srcKey = destKey = prop;
-			}
-			else {
-				srcKey = Object.keys(prop)[0];
-				destKey = prop[srcKey];
-			}
-
-			// if the value is a method and thisIndex is a number, forward this as the given numbered argument
-			return destKey instanceof Function && typeof options.thisIndex === 'number' ?
-				toInstance(src[prop], options.thisIndex) :
-				src[srcKey];
-		});
-
-		// install
-		_[options.safe ? 'defaults' : 'assign'](
-			dest,
-			_.zipObject(destKeys, destValues)
-		);
 	}
 
 	module.exports = {
 		install: install,
+		installOne: installOne,
 		toInstance: toInstance
 	};
+
 })(typeof exports !== 'undefined' ? exports : window.Nativity = {});

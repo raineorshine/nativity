@@ -46,32 +46,40 @@ describe('toInstance', function() {
 });
 
 
-describe('install', function() {
+describe('installOne', function() {
 
-  it('should install a given function to the destination object', function() {
+  it('should assign a given function to the destination object with the given key', function() {
 		var dest = { a: 1 };
 		var get = function() { return this.a; };
 
-		nativity.install(dest, get);
+		nativity.installOne(dest, get, 'get');
 
 		dest.should.have.property('a', 1);
 		dest.should.have.property('get');
 		dest.get().should.equal(1);
   });
 
-  it('should install an array of functions to the destination object', function() {
+	it('should not forward "this" if thisIndex === null', function() {
 		var dest = { a: 1 };
-		var get1 = function() { return this.a; };
-		var get2 = function() { return this.a * 2; };
+		var identity = function(x) { return x; };
 
-		nativity.install(dest, [get1, get2]);
+		nativity.installOne(dest, identity, 'identity', { thisIndex: null });
 
 		dest.should.have.property('a', 1);
-		dest.should.have.property('get1');
-		dest.should.have.property('get2');
-		dest.get1().should.equal(1);
-		dest.get2().should.equal(2);
+		dest.should.have.property('identity');
+		dest.identity(10).should.equal(10);
+	});
+
+  it('should override properties with the same name on the destination object if the safe option is set to false', function() {
+		var dest = { a: 1 };
+		nativity.installOne(dest, 10, 'a', { safe: false });
+		dest.should.have.property('a', 10);
   });
+
+});
+
+
+describe('install', function() {
 
   it('should install all properties from the src object to the dest object', function() {
 		var dest = { a: 1 };
@@ -87,16 +95,6 @@ describe('install', function() {
   });
 
 
-  it('should override properties with the same name on the destination object if the safe option is set to false', function() {
-		var dest = { a: 1 };
-		var src = { a: 10, b: 20 };
-
-		nativity.install(dest, src, null, { safe: false });
-
-		dest.should.have.property('a', 10);
-  });
-
-
   it('should install specific properties if a property list is given', function() {
 		var dest = { a: 1 };
 		var src = { a: 10, b: 20, get: function() { return this.a; } };
@@ -108,35 +106,6 @@ describe('install', function() {
 		dest.should.not.have.property('get');
   });
 
-
-  it('should forward "this" as the first argument to the installed method', function() {
-		var lib = {
-			pluck: function(arr, prop) {
-			  return arr.map(function(item) {
-			    return item[prop];
-			  });
-			}
-		};
-		nativity.install(Array.prototype, lib);
-
-		people = [
-			{ name: 'Theodore' },
-			{ name: 'Margaret' },
-			{ name: 'Ida' }
-		];
-		people.should.have.property('pluck')
-		people.pluck('name').should.deep.equal(['Theodore', 'Margaret', 'Ida']);
-  });
-
-
-	it('should be able to forward "this" to any argument position', function() {
-	  throw new Error('Test Not Implemented');
-	});
-
-
-	it('should not forward "this" if thisIndex === null', function() {
-	  throw new Error('Test Not Implemented');
-	});
 
 	it('should accept a key-value pair in place of a property name which will map the key to the source object and the value to the destination object', function() {
 		var dest = {};

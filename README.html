@@ -1,0 +1,230 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+
+body{
+  color:#444;
+  font-family:Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman',
+              "Hiragino Sans GB", "STXihei", "微软雅黑", serif;
+  font-size:12px;
+  line-height:1.5em;
+  background:#fefefe;
+  width: 45em;
+  margin: 10px auto;
+  padding: 1em;
+  outline: 1300px solid #FAFAFA;
+}
+
+a{ color: #0645ad; text-decoration:none;}
+a:visited{ color: #0b0080; }
+a:hover{ color: #06e; }
+a:active{ color:#faa700; }
+a:focus{ outline: thin dotted; }
+a:hover, a:active{ outline: 0; }
+
+span.backtick {
+  border:1px solid #EAEAEA;
+  border-radius:3px;
+  background:#F8F8F8;
+  padding:0 3px 0 3px;
+}
+
+::-moz-selection{background:rgba(255,255,0,0.3);color:#000}
+::selection{background:rgba(255,255,0,0.3);color:#000}
+
+a::-moz-selection{background:rgba(255,255,0,0.3);color:#0645ad}
+a::selection{background:rgba(255,255,0,0.3);color:#0645ad}
+
+p{
+margin:1em 0;
+}
+
+img{
+max-width:100%;
+}
+
+h1,h2,h3,h4,h5,h6{
+font-weight:normal;
+color:#111;
+line-height:1em;
+}
+h4,h5,h6{ font-weight: bold; }
+h1{ font-size:2.5em; }
+h2{ font-size:2em; border-bottom:1px solid silver; padding-bottom: 5px; }
+h3{ font-size:1.5em; }
+h4{ font-size:1.2em; }
+h5{ font-size:1em; }
+h6{ font-size:0.9em; }
+
+blockquote{
+color:#666666;
+margin:0;
+padding-left: 3em;
+border-left: 0.5em #EEE solid;
+}
+hr { display: block; height: 2px; border: 0; border-top: 1px solid #aaa;border-bottom: 1px solid #eee; margin: 1em 0; padding: 0; }
+
+
+pre , code, kbd, samp { 
+  color: #000; 
+  font-family: monospace; 
+  font-size: 0.88em; 
+  border-radius:3px;
+  background-color: #F8F8F8;
+  border: 1px solid #CCC; 
+}
+pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; padding: 5px 12px;}
+pre code { border: 0px !important; padding: 0;}
+code { padding: 0 3px 0 3px; }
+
+b, strong { font-weight: bold; }
+
+dfn { font-style: italic; }
+
+ins { background: #ff9; color: #000; text-decoration: none; }
+
+mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
+
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+ul, ol { margin: 1em 0; padding: 0 0 0 2em; }
+li p:last-child { margin:0 }
+dd { margin: 0 0 0 2em; }
+
+img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+td { vertical-align: top; }
+
+@media only screen and (min-width: 480px) {
+body{font-size:14px;}
+}
+
+@media only screen and (min-width: 768px) {
+body{font-size:16px;}
+}
+
+@media print {
+  * { background: transparent !important; color: black !important; filter:none !important; -ms-filter: none !important; }
+  body{font-size:12pt; max-width:100%; outline:none;}
+  a, a:visited { text-decoration: underline; }
+  hr { height: 1px; border:0; border-bottom:1px solid black; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
+  pre, blockquote { border: 1px solid #999; padding-right: 1em; page-break-inside: avoid; }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+</style><title>README</title></head><body><h1 id="nativity">nativity</h1>
+<p>Safely add methods to native object prototypes. </p>
+<ul>
+<li>Doesn't overwrite existing properties with same name by default for safety.</li>
+<li>If you do overwrite properties, you can access and restore them at any time.</li>
+<li>Automatically forwards "this" as first argument to installed functions. This is the magic that makes non-prototype functions work as prototype functions.</li>
+</ul>
+<h2 id="install">Install</h2>
+<pre><code>$ npm install --save nativity
+</code></pre>
+<h2 id="usage">Usage</h2>
+<pre><code>var nativity = require('nativity');
+var _ = require('underscore');
+
+nativity.install(Array.prototype, _, ['findWhere', 'pluck']);
+
+var people = [
+    { name: 'Tina', age: 45 },
+    { name: 'Todd', age: 48 },
+    { name: 'Tucker', age: 10 }
+];
+
+console.log(people.findWhere({ name: 'Todd' }));
+// { name: 'Todd', age: 48 }
+
+console.log(people.pluck('name'));
+// ['Tina', Todd', 'Tucker']
+</code></pre>
+<p>You can install a single method:</p>
+<pre><code>nativity.installOne(String.prototype, _.template, 'format');
+
+console.log('Hello &lt;%= name %&gt;!'.format({ name: 'Bartholomew' }));
+// Hello Bartholomew!
+</code></pre>
+<h3 id="api">API</h3>
+<h4 id="nativityinstall">nativity.install</h4>
+<p>Assigns the props from the source object to the destination object. Functions are converted to forward 'this' as the first argument. </p>
+<pre><code>nativity.install(destObject, srcObject[, props][, options]);
+</code></pre>
+<h4 id="nativityinstallone">nativity.installOne</h4>
+<p>Assigns the value to the source object at the given key. If the value is a function it will be converted to forward 'this' as the first argument. </p>
+<pre><code>nativity.installOne(destObject, value, key[, options]);
+</code></pre>
+<h3 id="options">Options</h3>
+<p>Defaults:</p>
+<pre><code>nativity.install(Array.prototype, _, ['findWhere', 'pluck'], {
+
+    // do not override existing properties on the host object
+    safe: true,
+
+    // only add properties that are functions
+    functionsOnly: false,
+
+    // specifies the argument index at which to forward 'this'
+    thisIndex: 0
+
+});
+</code></pre>
+<h3 id="restoration">Restoration</h3>
+<p>Nativity installs methods on objects <em>safely</em>, that is, you can access overwritten properties and restore them at any time.</p>
+<pre><code>var mylib = {
+    map: function(arr) { return 'blurp' },
+    filter: function(arr) { return 'skronk' },
+    dud: function() { return 'dud'; }
+};
+var installation = nativity.install(Array.prototype, mylib, { safe: false });
+
+console.log([1,2,3].map(function(n) { return n*n; }));
+// 'blurp'
+
+console.log(installation.overwritten);
+// 2
+
+console.log(installation.new);
+// { dud: [Function] }
+
+console.log(installation.prev);
+// { map: [Function], filter: [Function] }
+
+installation.restore();
+console.log([1,2,3].map(function(n) { return n*n; }));
+// [1,4,9]
+</code></pre>
+<h2 id="notes">Notes</h2>
+<p>Technically, nativity is written such that it can add properties to any object (i.e. _.defaults). It is the automatic forwarding of "this" as the first argument to installed methods that makes it special.</p>
+<pre><code>_.pluck(people, 'name')
+people.pluck('name')
+</code></pre>
+<p>Why is this better?</p>
+<ul>
+<li>Mimics Subject-Verb-Object structure of the English language</li>
+<li>More object-oriented</li>
+<li>Chainable</li>
+</ul>
+<h3 id="unit-tests">Unit Tests</h3>
+<p>Yes we have those</p>
+<pre><code>$ mocha
+</code></pre>
+<h3 id="build-notes">Build Notes</h3>
+<pre><code>$ gulp --require coffee-script/register
+</code></pre>
+<h2 id="plugins">Plugins</h2>
+<p>Nativity is designed for library authors to expose appropriate methods for use on native object prototypes in a safe manner. See the nativity plugins below for examples. Submit a pull request to add yours to the list.</p>
+<ul>
+<li><a href="http://github.com/metaraine/nativity-cint">nativity-cint</a></li>
+<li><a href="http://github.com/metaraine/nativity-fomatto">nativity-fomatto</a></li>
+<li>nativity-underscore - Coming Soon!</li>
+</ul></body></html>

@@ -17,6 +17,6 @@ gulp.task 'watch', ->
 	gulp.watch ['src/**/*.coffee'], ['scripts']
 
 gulp.task 'clean', ->
-	gulp.clean 'README.html'
+	clean 'README.html'
 
 gulp.task 'default', ['scripts', 'clean']

@@ -112,5 +112,4 @@ Nativity is designed for library authors to expose appropriate methods for use o
 
 * [nativity-cint](http://github.com/metaraine/nativity-cint)
 * [nativity-fomatto](http://github.com/metaraine/nativity-fomatto)
-* nativity-underscore - Coming Soon!
 

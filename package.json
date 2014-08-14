@@ -1,6 +1,6 @@
 {
   "name": "nativity",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Safely install functions on object prototypes.",
   "main": "index.js",
   "scripts": {
@@ -30,6 +30,5 @@
     "gulp-rename": "^1.2.0",
     "gulp-clean": "^0.2.4"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

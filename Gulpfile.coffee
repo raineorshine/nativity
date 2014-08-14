@@ -3,7 +3,7 @@ gutil = require('gulp-util')
 coffee = require('gulp-coffee')
 uglify = require('gulp-uglify')
 rename = require('gulp-rename')
-rename = require('gulp-clean')
+clean = require('gulp-clean')
 
 gulp.task 'scripts', ->
 	gulp.src('src/*.coffee')
@@ -17,6 +17,6 @@ gulp.task 'watch', ->
 	gulp.watch ['src/**/*.coffee'], ['scripts']
 
 gulp.task 'clean', ->
-	gulp.clean 'README.html'
+	clean 'README.html'
 
 gulp.task 'default', ['scripts', 'clean']

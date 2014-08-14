@@ -1,15 +1,13 @@
+
+/* The base installation object returned by installOne
+@overwritten	The number of properties that were overwritten.
+@prev				  An object that stores the previous values.
+@new				  An object that stores the new values.
+@restore			Restores the previous values that were overwritten.
+ */
+
 (function() {
-  var Installation, install, installOne, toInstance, _;
-
-  _ = require('lodash');
-
-
-  /* The base installation object returned by installOne
-  @overwritten	The number of properties that were overwritten.
-  @prev				  An object that stores the previous values.
-  @new				  An object that stores the new values.
-  @restore			Restores the previous values that were overwritten.
-   */
+  var Installation, extend, install, installOne, isPlainObject, toInstance;
 
   Installation = (function() {
     function Installation(host) {
@@ -24,12 +22,46 @@
       for (key in this["new"]) {
         delete this.host[key];
       }
-      return _.assign(this.host, this.prev);
+      return extend(this.host, this.prev);
     };
 
     return Installation;
 
   })();
+
+
+  /* 
+  Checks if value is an object created by the Object constructor.
+  @param value
+  @return boolean
+   */
+
+  isPlainObject = function(value) {
+    return typeof value === "object" && (!(value instanceof Array)) && (!(value instanceof Function));
+  };
+
+
+  /*
+  Copy all of the properties in the source objects over to the destination object, 
+  and return the destination object. It's in-order, so the last source will 
+  override properties of the same name in previous arguments.
+  @param *object takes any number of objects
+  @return an object with all properties of the combined objects
+   */
+
+  extend = function(obj) {
+    var args, key, prop, source;
+    args = Array.prototype.slice.call(arguments, 1);
+    for (key in args) {
+      source = args[key];
+      if (source) {
+        for (prop in source) {
+          obj[prop] = source[prop];
+        }
+      }
+    }
+    return obj;
+  };
 
 
   /*
@@ -60,11 +92,11 @@
   installOne = function(dest, value, name, options) {
     var included, installation, message, writeable;
     name = name || value.name;
-    options = _.defaults(options || {}, {
+    options = extend({
       safe: true,
       functionsOnly: false,
       thisIndex: 0
-    });
+    }, options || {});
     installation = new Installation(dest);
     if (!name) {
       message = (typeof value === 'function' ? 'No destination key provided for anonymous function' : 'No destination key provided for value');
@@ -95,7 +127,7 @@
 
   install = function(dest, src, props, options) {
     var installation;
-    if (_.isPlainObject(props)) {
+    if (isPlainObject(props)) {
       options = props;
       props = null;
     }
@@ -108,7 +140,7 @@
             from: prop,
             to: prop
           };
-        } else if (_.isPlainObject(prop)) {
+        } else if (isPlainObject(prop)) {
           key = Object.keys(prop)[0];
           return {
             from: key,
@@ -129,14 +161,14 @@
     props.forEach(function(prop) {
       var singleInstall;
       singleInstall = installOne(dest, src[prop.from], prop.to, options);
-      _.assign(installation.prev, singleInstall.prev);
-      return _.assign(installation["new"], singleInstall["new"]);
+      extend(installation.prev, singleInstall.prev);
+      return extend(installation["new"], singleInstall["new"]);
     });
     installation.overwritten = Object.keys(installation.prev).length;
     return installation;
   };
 
-  _.assign((typeof exports !== "undefined" && exports !== null ? exports : window.Nativity = {}), {
+  extend((typeof exports !== "undefined" && exports !== null ? exports : window.Nativity = {}), {
     install: install,
     installOne: installOne,
     toInstance: toInstance

@@ -1,6 +1,3 @@
-_ = require('lodash')
-
-
 ### The base installation object returned by installOne
 @overwritten	The number of properties that were overwritten.
 @prev				  An object that stores the previous values.
@@ -21,8 +18,32 @@ class Installation
 			delete @host[key]
 
 		# restore existing properties
-		_.assign @host, @prev
+		extend @host, @prev
 
+### 
+Checks if value is an object created by the Object constructor.
+@param value
+@return boolean
+### 
+isPlainObject = (value) ->
+  typeof (value) is "object" and (value not instanceof Array) and (value not instanceof Function)
+
+
+###
+Copy all of the properties in the source objects over to the destination object, 
+and return the destination object. It's in-order, so the last source will 
+override properties of the same name in previous arguments.
+@param *object takes any number of objects
+@return an object with all properties of the combined objects
+### 
+extend = (obj) ->
+  args = Array::slice.call(arguments, 1)
+  for key of args
+    source = args[key]
+    if source
+      for prop of source
+        obj[prop] = source[prop]
+  obj
 
 ###
 Returns a new function that forwards 'this' as the first parameter to the given function, and thus can be called as a method of the object itself.
@@ -56,10 +77,11 @@ installOne = (dest, value, name, options) ->
 	
 	# defaults
 	name = name or value.name
-	options = _.defaults(options or {},
+	options = extend(
 		safe: true
 		functionsOnly: false
-		thisIndex: 0
+		thisIndex: 0,
+		options or {}
 	)
 
 	installation = new Installation dest
@@ -98,7 +120,7 @@ Assigns the props from the src object to dest after converting them with toInsta
 install = (dest, src, props, options) ->
 	
 	# if options are specified but props is not, swap arguments
-	if _.isPlainObject props
+	if isPlainObject props
 		options = props
 		props = null
 
@@ -111,7 +133,7 @@ install = (dest, src, props, options) ->
 			if typeof prop is 'string'
 				from: prop
 				to: prop
-			else if _.isPlainObject(prop)
+			else if isPlainObject(prop)
 				key = Object.keys(prop)[0]
 				from: key
 				to: prop[key]
@@ -130,15 +152,15 @@ install = (dest, src, props, options) ->
 	# install each prop onto the destination
 	props.forEach (prop) ->
 		singleInstall = installOne dest, src[prop.from], prop.to, options
-		_.assign installation.prev, singleInstall.prev
-		_.assign installation.new, singleInstall.new
+		extend installation.prev, singleInstall.prev
+		extend installation.new, singleInstall.new
 
 	# do this at the end; if multiple properties with the same name were specified we don't want to double count them
 	installation.overwritten = Object.keys(installation.prev).length
 
 	return installation
 
-_.assign (if exports? then exports else window.Nativity = {}), 
+extend (if exports? then exports else window.Nativity = {}), 
 	install: install
 	installOne: installOne
 	toInstance: toInstance
